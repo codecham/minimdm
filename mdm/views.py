@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, mixins, status
+from rest_framework	import viewsets, mixins, status
 from rest_framework.response import Response
-
-from .serializers import UserSerializer
+from .models import Fleet
+from .serializers import FleetSerializer, UserSerializer
 from .permissions import IsAdminUser, IsAdminOrSelf
 
 
@@ -54,3 +54,30 @@ class UserViewSet(
         # Return the created user
         output_serializer = self.get_serializer(user)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    
+class FleetViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    ViewSet for managing fleets.
+    
+    Users can only see and manage their own fleets.
+    
+    list:     GET /api/fleets/        - List user's fleets
+    create:   POST /api/fleets/       - Create a fleet (owner = current user)
+    retrieve: GET /api/fleets/{id}/   - Fleet detail (only if owner)
+    """
+    
+    serializer_class = FleetSerializer
+    
+    def get_queryset(self):
+        """Return only fleets owned by the authenticated user."""
+        return Fleet.objects.filter(owner=self.request.user)
+    
+    def perform_create(self, serializer):
+        """Automatically set the owner to the current user."""
+        serializer.save(owner=self.request.user)

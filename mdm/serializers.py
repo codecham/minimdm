@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Fleet
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
     On list view, fleets are not included for performance.
     """
     
-    # This field is only used for detail view - we'll handle this in the viewset
     fleets = serializers.SerializerMethodField()
     
     username = serializers.CharField(
@@ -39,3 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
             {'id': fleet.id, 'name': fleet.name}
             for fleet in obj.fleets.all()
         ]
+
+class FleetSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Fleet model.
+    
+    The owner is automatically set to the authenticated user on creation.
+    """
+    
+    class Meta:
+        model = Fleet
+        fields = ['id', 'name', 'owner', 'created_at']
+        read_only_fields = ['id', 'owner', 'created_at']
