@@ -101,7 +101,7 @@ class Command(BaseCommand):
         
         # Validate fleets
         fleets = data.get('fleets', [])
-        fleet_names = set()
+        fleet_keys = set()  # Format: "owner:fleet_name"
         for i, fleet in enumerate(fleets):
             prefix = f'fleets[{i}]'
             
@@ -118,23 +118,24 @@ class Command(BaseCommand):
                 errors.append(f'{prefix}: owner "{owner}" not found in users')
             
             # Unique name per owner
-            fleet_key = f"{name}:{owner}"
-            if fleet_key in fleet_names:
+            fleet_key = f"{owner}:{name}"
+            if fleet_key in fleet_keys:
                 errors.append(f'{prefix}: duplicate fleet name "{name}" for owner "{owner}"')
             else:
-                fleet_names.add(fleet_key)
+                fleet_keys.add(fleet_key)
         
         # Validate devices
         devices = data.get('devices', [])
-        valid_fleet_names = {f.get('name') for f in fleets}
         for i, device in enumerate(devices):
             prefix = f'devices[{i}]'
             
-            # Fleet
+            # Fleet (format: "owner:fleet_name")
             fleet = device.get('fleet', '')
             if not fleet:
                 errors.append(f'{prefix}: fleet is required')
-            elif fleet not in valid_fleet_names:
+            elif ':' not in fleet:
+                errors.append(f'{prefix}: fleet must be in format "owner:fleet_name" (got "{fleet}")')
+            elif fleet not in fleet_keys:
                 errors.append(f'{prefix}: fleet "{fleet}" not found in fleets')
             
             # OS Version (optional but must be positive if provided)
@@ -181,13 +182,17 @@ class Command(BaseCommand):
                 name=fleet_data['name'],
                 owner=owner,
             )
-            fleets[fleet.name] = fleet
+            # Key format: "owner:fleet_name"
+            fleets[f"{owner.username}:{fleet.name}"] = fleet
             self.stdout.write(self.style.SUCCESS(f'  Created: {fleet.name} (owner: {owner.username})'))
         
         # Create devices
         self.stdout.write('\nCreating devices...')
         for device_data in data.get('devices', []):
-            fleet = fleets[device_data['fleet']]
+            # Parse "owner:fleet_name" format
+            fleet_key = device_data['fleet']
+            fleet = fleets[fleet_key]
+            
             device = Device.objects.create(
                 fleet=fleet,
                 os_version=device_data.get('os_version'),

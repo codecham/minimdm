@@ -8,15 +8,15 @@
       "is_superuser": true
     },
     {
-	  "username": "alice",
+      "username": "alice",
       "email": "alice@famoco.com",
       "password": "alice123",
       "is_staff": false,
       "is_superuser": false
     },
     {
-	  "username": "bryan",
-	  "email": "bryan@famoco.com",
+      "username": "bryan",
+      "email": "bryan@famoco.com",
       "password": "bryan123",
       "is_staff": false,
       "is_superuser": false
@@ -32,34 +32,41 @@
       "owner": "alice"
     },
     {
-      "name": "Bryan Fleet",
+      "name": "bryan Fleet",
+      "owner": "bryan"
+    },
+    {
+      "name": "Production Fleet",
       "owner": "bryan"
     }
   ],
   "devices": [
     {
-      "fleet": "Production Fleet",
+      "fleet": "alice:Production Fleet",
       "os_version": 12
     },
     {
-      "fleet": "Production Fleet",
+      "fleet": "alice:Production Fleet",
       "os_version": 12
     },
     {
-      "fleet": "Production Fleet",
+      "fleet": "alice:Production Fleet",
       "os_version": 11
     },
     {
-      "fleet": "Testing Fleet",
+      "fleet": "alice:Testing Fleet",
       "os_version": 14
     },
     {
-      "fleet": "Testing Fleet",
+      "fleet": "alice:Testing Fleet",
       "os_version": null
     },
     {
-      "fleet": "Bryan Fleet",
+      "fleet": "bryan:bryan Fleet",
       "os_version": 10
+    },
+    {
+      "fleet": "bryan:bryan Fleet"
     }
   ]
 }
