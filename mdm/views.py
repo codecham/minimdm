@@ -13,11 +13,9 @@ class UserViewSet(
     viewsets.GenericViewSet
 ):
     """
-    ViewSet for managing users.
+    User management endpoints.
     
-    list:     GET /api/users/        - Admin only
-    create:   POST /api/users/       - Admin only
-    retrieve: GET /api/users/{id}/   - Admin or profile owner
+    **Permissions:** Admin only, except users can view their own profile.
     """
     
     queryset = User.objects.all()
@@ -63,13 +61,9 @@ class FleetViewSet(
     viewsets.GenericViewSet
 ):
     """
-    ViewSet for managing fleets.
+    Fleet management endpoints.
     
-    Users can only see and manage their own fleets.
-    
-    list:     GET /api/fleets/        - List user's fleets
-    create:   POST /api/fleets/       - Create a fleet (owner = current user)
-    retrieve: GET /api/fleets/{id}/   - Fleet detail (only if owner)
+    **Permissions:** Users can only access their own fleets.
     """
     
     serializer_class = FleetSerializer
@@ -85,16 +79,11 @@ class FleetViewSet(
 
 class DeviceViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing devices.
+    Device management endpoints.
     
-    Users can only see and manage devices in fleets they own.
+    **Permissions:** Users can only manage devices in their own fleets.
     
-    list:     GET /api/devices/        - List devices in user's fleets
-    create:   POST /api/devices/       - Create device in owned fleet
-    retrieve: GET /api/devices/{id}/   - Device detail (only if in owned fleet)
-    update:   PUT /api/devices/{id}/   - Update device (only if in owned fleet)
-    partial:  PATCH /api/devices/{id}/ - Partial update (only if in owned fleet)
-    destroy:  DELETE /api/devices/{id}/- Delete device (only if in owned fleet)
+    **Filtering:** Use `?fleet={id}` to filter by fleet.
     """
     
     serializer_class = DeviceSerializer
