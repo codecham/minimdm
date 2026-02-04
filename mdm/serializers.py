@@ -52,6 +52,29 @@ class FleetSerializer(serializers.ModelSerializer):
         model = Fleet
         fields = ['id', 'name', 'owner', 'created_at']
         read_only_fields = ['id', 'owner', 'created_at']
+    
+    def validate_name(self, value):
+        """
+        Validate that the fleet name is unique for this owner.
+        """
+        request = self.context.get('request')
+        if not request or not request.user:
+            return value
+        
+        existing = Fleet.objects.filter(
+            name=value,
+            owner=request.user
+        )
+        
+        if self.instance:
+            existing = existing.exclude(pk=self.instance.pk)
+        
+        if existing.exists():
+            raise serializers.ValidationError(
+                "You already have a fleet with this name."
+            )
+        
+        return value
 
 
 class DeviceSerializer(serializers.ModelSerializer):
