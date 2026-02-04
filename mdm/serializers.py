@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Fleet
+from .models import Fleet, Device
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
             for fleet in obj.fleets.all()
         ]
 
+
 class FleetSerializer(serializers.ModelSerializer):
     """
     Serializer for Fleet model.
@@ -51,3 +52,30 @@ class FleetSerializer(serializers.ModelSerializer):
         model = Fleet
         fields = ['id', 'name', 'owner', 'created_at']
         read_only_fields = ['id', 'owner', 'created_at']
+
+
+class DeviceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Device model.
+    
+    Validates that the user owns the fleet when creating or updating a device.
+    """
+    
+    class Meta:
+        model = Device
+        fields = ['id', 'serial_number', 'fleet', 'os_version', 'created_at']
+        read_only_fields = ['id', 'serial_number', 'created_at']
+    
+    def validate_fleet(self, value):
+        """
+        Validate that the authenticated user owns the specified fleet.
+        """
+        request = self.context.get('request')
+        
+        if not request or not request.user:
+            raise serializers.ValidationError("Authentication required.")
+        
+        if value.owner != request.user:
+            raise serializers.ValidationError("You can only add devices to your own fleets.")
+        
+        return value

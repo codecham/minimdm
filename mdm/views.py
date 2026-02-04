@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework	import viewsets, mixins, status
 from rest_framework.response import Response
-from .models import Fleet
-from .serializers import FleetSerializer, UserSerializer
+from .models import Fleet, Device
+from .serializers import FleetSerializer, UserSerializer, DeviceSerializer
 from .permissions import IsAdminUser, IsAdminOrSelf
 
 
@@ -81,3 +81,24 @@ class FleetViewSet(
     def perform_create(self, serializer):
         """Automatically set the owner to the current user."""
         serializer.save(owner=self.request.user)
+
+
+class DeviceViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing devices.
+    
+    Users can only see and manage devices in fleets they own.
+    
+    list:     GET /api/devices/        - List devices in user's fleets
+    create:   POST /api/devices/       - Create device in owned fleet
+    retrieve: GET /api/devices/{id}/   - Device detail (only if in owned fleet)
+    update:   PUT /api/devices/{id}/   - Update device (only if in owned fleet)
+    partial:  PATCH /api/devices/{id}/ - Partial update (only if in owned fleet)
+    destroy:  DELETE /api/devices/{id}/- Delete device (only if in owned fleet)
+    """
+    
+    serializer_class = DeviceSerializer
+    
+    def get_queryset(self):
+        """Return only devices in fleets owned by the authenticated user."""
+        return Device.objects.filter(fleet__owner=self.request.user)
