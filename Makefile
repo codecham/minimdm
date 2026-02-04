@@ -141,5 +141,5 @@ urls:
 	@echo "$(BOLD)Test accounts:$(RESET)"
 	@echo "  $(GREEN)admin$(RESET) / admin123  (admin user)"
 	@echo "  $(GREEN)alice$(RESET) / alice123  (regular user with 2 fleets)"
-	@echo "  $(GREEN)bob$(RESET)   / bob123    (regular user with 2 fleet)"
+	@echo "  $(GREEN)bryan$(RESET)   / bryan123    (regular user with 2 fleet)"
 	@echo ""
