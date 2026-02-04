@@ -112,4 +112,4 @@ class DeviceViewSet(viewsets.ModelViewSet):
         if fleet_id:
             queryset = queryset.filter(fleet_id=fleet_id)
     
-            return queryset
+        return queryset
