@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework	import viewsets, mixins, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Fleet, Device
 from .serializers import FleetSerializer, UserSerializer, DeviceSerializer
-from .permissions import IsAdminUser, IsAdminOrSelf
+from .permissions import IsAdminUser, IsAdminOrSelf, permissions
 
 
 class UserViewSet(
@@ -31,6 +32,8 @@ class UserViewSet(
             return [IsAdminUser()]
         elif self.action == 'retrieve':
             return [IsAdminOrSelf()]
+        elif self.action == 'me':
+            return [permissions.IsAuthenticated()]
         return [IsAdminUser()]
     
     def create(self, request, *args, **kwargs):
@@ -52,6 +55,16 @@ class UserViewSet(
         # Return the created user
         output_serializer = self.get_serializer(user)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['get'], url_path='me')
+    def me(self, request):
+        """
+        Return the authenticated user's profile.
+        
+        GET /api/users/me/
+        """
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
 
     
 class FleetViewSet(
