@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import Fleet, Device
 
 
@@ -90,11 +91,20 @@ class DeviceSerializer(serializers.ModelSerializer):
             'does_not_exist': 'Fleet not found or you don\'t have access to it.',
         }
     )
+    serial_number = serializers.UUIDField(
+        required=False,
+        validators=[
+            UniqueValidator(
+                queryset=Device.objects.all(),
+                message="A device with this serial number already exists."
+            )
+        ]
+    )
     
     class Meta:
         model = Device
         fields = ['id', 'serial_number', 'fleet', 'os_version', 'created_at']
-        read_only_fields = ['id', 'serial_number', 'created_at']
+        read_only_fields = ['id', 'created_at']
     
     def validate_fleet(self, value):
         """
