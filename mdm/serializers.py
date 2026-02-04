@@ -84,6 +84,13 @@ class DeviceSerializer(serializers.ModelSerializer):
     Validates that the user owns the fleet when creating or updating a device.
     """
     
+    fleet = serializers.PrimaryKeyRelatedField(
+        queryset=Fleet.objects.all(),
+        error_messages={
+            'does_not_exist': 'Fleet not found or you don\'t have access to it.',
+        }
+    )
+    
     class Meta:
         model = Device
         fields = ['id', 'serial_number', 'fleet', 'os_version', 'created_at']
@@ -99,6 +106,8 @@ class DeviceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Authentication required.")
         
         if value.owner != request.user:
-            raise serializers.ValidationError("You can only add devices to your own fleets.")
+            raise serializers.ValidationError(
+                "Fleet not found or you don't have access to it."
+            )
         
         return value
