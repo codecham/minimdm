@@ -30,6 +30,7 @@ help:
 	@echo "$(YELLOW)Development:$(RESET)"
 	@echo "  $(CYAN)make shell$(RESET)      - Open Django shell"
 	@echo "  $(CYAN)make bash$(RESET)       - Open bash in web container"
+	@echo "  $(CYAN)make test$(RESET)       - Run tests"
 	@echo ""
 	@echo "$(YELLOW)Utilities:$(RESET)"
 	@echo "  $(CYAN)make urls$(RESET)       - Show useful URLs"
@@ -119,6 +120,10 @@ shell:
 
 bash:
 	@docker-compose exec web bash
+
+test:
+	@echo "$(YELLOW)Running tests...$(RESET)"
+	@docker-compose exec web pytest
 
 # =============================================================================
 # UTILITIES
