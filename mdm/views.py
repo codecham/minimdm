@@ -100,5 +100,16 @@ class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     
     def get_queryset(self):
-        """Return only devices in fleets owned by the authenticated user."""
-        return Device.objects.filter(fleet__owner=self.request.user)
+        """
+        Return only devices in fleets owned by the authenticated user.
+    
+        Supports filtering by fleet: GET /api/devices/?fleet=2
+        """
+        queryset = Device.objects.filter(fleet__owner=self.request.user)
+    
+        # Filter by fleet if provided
+        fleet_id = self.request.query_params.get('fleet')
+        if fleet_id:
+            queryset = queryset.filter(fleet_id=fleet_id)
+    
+            return queryset
