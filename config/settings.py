@@ -155,4 +155,16 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'A mini Mobile Device Management REST API',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    
+    # Override the auto-generated tokenAuth with clearer instructions
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'tokenAuth': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization',
+                'description': 'Enter your token with the "Token " prefix.\n\nExample: **Token abc123def456**'
+            }
+        }
+    },
 }
