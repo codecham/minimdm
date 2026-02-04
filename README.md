@@ -78,7 +78,7 @@ That's it! The `make setup` command will:
 |------|----------|----------|-------------|
 | Admin | `admin` | `admin123` | Can manage users |
 | User | `alice` | `alice123` | Has 2 fleets, 5 devices |
-| User | `bob` | `bob123` | Has 1 fleet, 1 device |
+| User | `bryan` | `bryan123` | Has 1 fleet, 1 device |
 
 ---
 
