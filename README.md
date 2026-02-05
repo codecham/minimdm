@@ -39,7 +39,7 @@ This single command will:
 2. Run database migrations
 3. Seed the database with test data
 
-If `make` is not available on your system, you can run the commands manually:
+If `make` is not available on your system or you encounter issues with it, you can run the commands manually:
 ```bash
 docker-compose up -d --build
 # Wait ~10 seconds for the database to start

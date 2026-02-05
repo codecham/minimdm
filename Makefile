@@ -1,3 +1,9 @@
+ifeq ($(OS),Windows_NT)
+    SLEEP = timeout /t
+else
+    SLEEP = sleep
+endif
+
 .PHONY: help setup build start stop restart logs migrate seed flush shell bash test urls
 
 help:
@@ -42,7 +48,7 @@ setup:
 	@docker-compose up -d --build
 	@echo ""
 	@echo "Waiting for database to be ready (5s)..."
-	@sleep 5
+	@$(SLEEP) 5
 	@echo ""
 	@echo "Running migrations..."
 	@docker-compose exec web python manage.py migrate
