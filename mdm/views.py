@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from .models import Fleet, Device
 from .serializers import FleetSerializer, UserSerializer, DeviceSerializer
 from .permissions import IsAdminUser, IsAdminOrSelf
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
 
 # =============================================================================
@@ -121,7 +121,17 @@ class FleetViewSet(
 @extend_schema_view(
     list=extend_schema(
         summary="List devices",
-        description="Return all devices in fleets owned by the authenticated user.",
+        description="Return all devices in fleets owned by the authenticated user. "
+                    "Use the fleet parameter to filter by fleet.",
+        parameters=[
+            OpenApiParameter(
+                name='fleet',
+                type=int,
+                location=OpenApiParameter.QUERY,
+                description='Filter devices by fleet ID',
+                required=False,
+            ),
+        ],
     ),
     create=extend_schema(
         summary="Create a device",

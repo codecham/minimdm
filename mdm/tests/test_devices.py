@@ -150,3 +150,49 @@ class TestDeviceDelete:
 
         assert response.status_code == 404
         assert Device.objects.filter(id=other_device.id).exists()
+
+
+@pytest.mark.django_db
+class TestDeviceSerialNumber:
+    """Tests for device serial number handling."""
+
+    endpoint = '/api/devices/'
+
+    def test_serial_number_auto_generated(self, auth_client, fleet):
+        """Serial number is auto-generated if not provided."""
+        response = auth_client.post(self.endpoint, {
+            'fleet': fleet.id,
+        })
+
+        assert response.status_code == 201
+        assert 'serial_number' in response.data
+        assert response.data['serial_number'] is not None
+
+    def test_serial_number_can_be_provided(self, auth_client, fleet):
+        """Users can provide their own serial number."""
+        custom_uuid = '11111111-1111-1111-1111-111111111111'
+
+        response = auth_client.post(self.endpoint, {
+            'fleet': fleet.id,
+            'serial_number': custom_uuid,
+        })
+
+        assert response.status_code == 201
+        assert response.data['serial_number'] == custom_uuid
+
+    def test_duplicate_serial_number_rejected(self, auth_client, fleet):
+        """Duplicate serial numbers are rejected."""
+        custom_uuid = '22222222-2222-2222-2222-222222222222'
+
+        auth_client.post(self.endpoint, {
+            'fleet': fleet.id,
+            'serial_number': custom_uuid,
+        })
+
+        response = auth_client.post(self.endpoint, {
+            'fleet': fleet.id,
+            'serial_number': custom_uuid,
+        })
+
+        assert response.status_code == 400
+        assert 'serial_number' in response.data

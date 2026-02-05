@@ -98,3 +98,30 @@ class TestUserDetail:
         assert 'fleets' in response.data
         assert len(response.data['fleets']) == 1
         assert response.data['fleets'][0]['name'] == 'Alice Fleet'
+
+
+@pytest.mark.django_db
+class TestUserMe:
+    """Tests for GET /api/users/me/"""
+
+    endpoint = '/api/users/me/'
+
+    def test_authenticated_user_can_access_own_profile(self, auth_client, user):
+        """Authenticated users can access their own profile via /me/."""
+        response = auth_client.get(self.endpoint)
+
+        assert response.status_code == 200
+        assert response.data['username'] == 'alice'
+
+    def test_me_includes_fleets(self, auth_client, user, fleet):
+        """The /me/ endpoint includes the user's fleets."""
+        response = auth_client.get(self.endpoint)
+
+        assert response.status_code == 200
+        assert len(response.data['fleets']) == 1
+
+    def test_unauthenticated_cannot_access_me(self, api_client):
+        """Unauthenticated requests are rejected."""
+        response = api_client.get(self.endpoint)
+
+        assert response.status_code == 401

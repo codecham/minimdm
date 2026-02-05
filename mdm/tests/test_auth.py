@@ -46,3 +46,21 @@ class TestAuthentication:
         response = api_client.get('/api/fleets/')
 
         assert response.status_code == 401
+    
+    def test_token_response_includes_user_info(self, api_client):
+        """Token response includes user_id and username."""
+        User.objects.create_user(
+            username='testuser',
+            password='testpass123',
+        )
+
+        response = api_client.post(self.endpoint, {
+            'username': 'testuser',
+            'password': 'testpass123',
+        })
+
+        assert response.status_code == 200
+        assert 'token' in response.data
+        assert 'user_id' in response.data
+        assert 'username' in response.data
+        assert response.data['username'] == 'testuser'

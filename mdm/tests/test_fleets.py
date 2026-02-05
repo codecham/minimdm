@@ -74,3 +74,24 @@ class TestFleetDetail:
         response = auth_client.get(f'/api/fleets/{other_fleet.id}/')
 
         assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestFleetDeviceCount:
+    """Tests for device_count in fleet responses."""
+
+    endpoint = '/api/fleets/'
+
+    def test_fleet_includes_device_count(self, auth_client, fleet, device):
+        """Fleet response includes the number of devices."""
+        response = auth_client.get(f'{self.endpoint}{fleet.id}/')
+
+        assert response.status_code == 200
+        assert response.data['device_count'] == 1
+
+    def test_fleet_device_count_is_zero(self, auth_client, fleet):
+        """Empty fleet has device_count of 0."""
+        response = auth_client.get(f'{self.endpoint}{fleet.id}/')
+
+        assert response.status_code == 200
+        assert response.data['device_count'] == 0
