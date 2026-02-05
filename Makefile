@@ -1,39 +1,32 @@
 .PHONY: help setup build start stop restart logs migrate seed flush shell bash test urls
 
-GREEN  := \033[0;32m
-YELLOW := \033[0;33m
-CYAN   := \033[0;36m
-WHITE  := \033[0;37m
-BOLD   := \033[1m
-RESET  := \033[0m
-
 help:
 	@echo ""
-	@echo "$(BOLD)MiniMDM - Available commands$(RESET)"
+	@echo "MiniMDM - Available commands"
 	@echo "=============================="
 	@echo ""
-	@echo "$(YELLOW)Setup & Installation:$(RESET)"
-	@echo "  $(CYAN)make setup$(RESET)      - First time setup (build + migrate + seed)"
-	@echo "  $(CYAN)make build$(RESET)      - Rebuild containers"
+	@echo "Setup & Installation:"
+	@echo "  make setup      - First time setup (build + migrate + seed)"
+	@echo "  make build      - Rebuild containers"
 	@echo ""
-	@echo "$(YELLOW)Start & Stop:$(RESET)"
-	@echo "  $(CYAN)make start$(RESET)      - Start containers"
-	@echo "  $(CYAN)make stop$(RESET)       - Stop containers"
-	@echo "  $(CYAN)make restart$(RESET)    - Restart containers"
-	@echo "  $(CYAN)make logs$(RESET)       - View logs (Ctrl+C to exit)"
+	@echo "Start & Stop:"
+	@echo "  make start      - Start containers"
+	@echo "  make stop       - Stop containers"
+	@echo "  make restart    - Restart containers"
+	@echo "  make logs       - View logs (Ctrl+C to exit)"
 	@echo ""
-	@echo "$(YELLOW)Database:$(RESET)"
-	@echo "  $(CYAN)make migrate$(RESET)    - Run migrations"
-	@echo "  $(CYAN)make seed$(RESET)       - Seed database with test data"
-	@echo "  $(CYAN)make flush$(RESET)      - Clear all data from database"
+	@echo "Database:"
+	@echo "  make migrate    - Run migrations"
+	@echo "  make seed       - Seed database with test data"
+	@echo "  make flush      - Clear all data from database"
 	@echo ""
-	@echo "$(YELLOW)Development:$(RESET)"
-	@echo "  $(CYAN)make shell$(RESET)      - Open Django shell"
-	@echo "  $(CYAN)make bash$(RESET)       - Open bash in web container"
-	@echo "  $(CYAN)make test$(RESET)       - Run tests"
+	@echo "Development:"
+	@echo "  make shell      - Open Django shell"
+	@echo "  make bash       - Open bash in web container"
+	@echo "  make test       - Run tests"
 	@echo ""
-	@echo "$(YELLOW)Utilities:$(RESET)"
-	@echo "  $(CYAN)make urls$(RESET)       - Show useful URLs"
+	@echo "Utilities:"
+	@echo "  make urls       - Show useful URLs"
 	@echo ""
 
 # =============================================================================
@@ -42,33 +35,27 @@ help:
 
 setup:
 	@echo ""
-	@echo "$(BOLD)Setting up MiniMDM...$(RESET)"
+	@echo "Setting up MiniMDM..."
 	@echo "====================="
 	@echo ""
-	@if [ ! -f .env ]; then \
-		echo "$(YELLOW)Creating .env file from .env.example...$(RESET)"; \
-		cp .env.example .env; \
-		echo "$(GREEN)Done!$(RESET)"; \
-		echo ""; \
-	fi
-	@echo "$(YELLOW)Building and starting containers...$(RESET)"
+	@echo "Building and starting containers..."
 	@docker-compose up -d --build
 	@echo ""
-	@echo "$(YELLOW)Waiting for database to be ready...$(RESET)"
-	@sleep 3
+	@echo "Waiting for database to be ready..."
+	@timeout 5 >nul 2>&1 || sleep 5
 	@echo ""
-	@echo "$(YELLOW)Running migrations...$(RESET)"
+	@echo "Running migrations..."
 	@docker-compose exec web python manage.py migrate
 	@echo ""
-	@echo "$(YELLOW)Seeding database with test data...$(RESET)"
+	@echo "Seeding database with test data..."
 	@docker-compose exec web python manage.py seed_db --no-input
 	@echo ""
-	@echo "$(GREEN)$(BOLD)Setup complete!$(RESET)"
+	@echo "Setup complete!"
 	@echo ""
 	@make urls
 
 build:
-	@echo "$(YELLOW)Building containers...$(RESET)"
+	@echo "Building containers..."
 	@docker-compose build
 
 # =============================================================================
@@ -76,17 +63,17 @@ build:
 # =============================================================================
 
 start:
-	@echo "$(YELLOW)Starting containers...$(RESET)"
+	@echo "Starting containers..."
 	@docker-compose up -d
 	@echo ""
 	@make urls
 
 stop:
-	@echo "$(YELLOW)Stopping containers...$(RESET)"
+	@echo "Stopping containers..."
 	@docker-compose down
 
 restart:
-	@echo "$(YELLOW)Restarting containers...$(RESET)"
+	@echo "Restarting containers..."
 	@docker-compose restart
 	@echo ""
 	@make urls
@@ -99,17 +86,17 @@ logs:
 # =============================================================================
 
 migrate:
-	@echo "$(YELLOW)Running migrations...$(RESET)"
+	@echo "Running migrations..."
 	@docker-compose exec web python manage.py migrate
 
 seed:
-	@echo "$(YELLOW)Seeding database...$(RESET)"
+	@echo "Seeding database..."
 	@docker-compose exec web python manage.py seed_db
 
 flush:
-	@echo "$(YELLOW)Flushing database...$(RESET)"
+	@echo "Flushing database..."
 	@docker-compose exec web python manage.py flush --no-input
-	@echo "$(GREEN)Done! Database is now empty.$(RESET)"
+	@echo "Done! Database is now empty."
 
 # =============================================================================
 # DEVELOPMENT
@@ -122,7 +109,7 @@ bash:
 	@docker-compose exec web bash
 
 test:
-	@echo "$(YELLOW)Running tests...$(RESET)"
+	@echo "Running tests..."
 	@docker-compose exec web pytest
 
 # =============================================================================
@@ -131,15 +118,15 @@ test:
 
 urls:
 	@echo ""
-	@echo "$(BOLD)Useful URLs:$(RESET)"
-	@echo "  $(CYAN)API:$(RESET)      http://localhost:8000/api/"
-	@echo "  $(CYAN)Swagger:$(RESET)  http://localhost:8000/api/docs/"
-	@echo "  $(CYAN)ReDoc:$(RESET)    http://localhost:8000/api/redoc/"
-	@echo "  $(CYAN)Admin:$(RESET)    http://localhost:8000/admin/"
-	@echo "  $(CYAN)pgweb:$(RESET)    http://localhost:8081/"
+	@echo "Useful URLs:"
+	@echo "  API:      http://localhost:8000/api/"
+	@echo "  Swagger:  http://localhost:8000/api/docs/"
+	@echo "  ReDoc:    http://localhost:8000/api/redoc/"
+	@echo "  Admin:    http://localhost:8000/admin/"
+	@echo "  pgweb:    http://localhost:8081/"
 	@echo ""
-	@echo "$(BOLD)Test accounts:$(RESET)"
-	@echo "  $(GREEN)admin$(RESET) / admin123  (admin user)"
-	@echo "  $(GREEN)alice$(RESET) / alice123  (regular user with 2 fleets)"
-	@echo "  $(GREEN)bryan$(RESET)   / bryan123    (regular user with 2 fleet)"
+	@echo "Test accounts:"
+	@echo "  admin / admin123  (admin user)"
+	@echo "  alice / alice123  (regular user with 2 fleets)"
+	@echo "  bryan / bryan123  (regular user with 1 fleet)"
 	@echo ""
