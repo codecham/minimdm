@@ -28,18 +28,27 @@ This project is a technical exercise implementing a simplified MDM platform wher
 - Make (optional, but recommended)
 
 ### Installation
-
 ```bash
-git clone <repository-url>
+git clone 
 cd minimdm
 make setup
 ```
 
 This single command will:
-1. Create the `.env` file from `.env.example`
-2. Build and start the Docker containers
-3. Run database migrations
-4. Seed the database with test data
+1. Build and start the Docker containers
+2. Run database migrations
+3. Seed the database with test data
+
+If `make` is not available on your system, you can run the commands manually:
+```bash
+docker-compose up -d --build
+# Wait ~10 seconds for the database to start
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py seed_db --no-input
+```
+
+> **Note:** Database credentials are hardcoded in `docker-compose.yml` for simplicity.
+> In a production environment, these should be stored in environment variables or a `.env` file.
 
 ### Test Accounts
 
@@ -266,6 +275,7 @@ Beyond the core requirements, the following features were added:
 - **Tokens don't expire** -- once issued, authentication tokens are valid indefinitely
 - **No audit log** -- device movements between fleets are not tracked historically
 - **PUT behaves like PATCH** -- DRF's default ModelViewSet does not enforce strict PUT semantics (missing fields are not reset to null)
+- **Hardcoded credentials** -- database credentials are stored directly in `docker-compose.yml` for ease of setup. In production, these should use environment variables or secrets management.
 
 ---
 
