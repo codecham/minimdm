@@ -41,8 +41,8 @@ setup:
 	@echo "Building and starting containers..."
 	@docker-compose up -d --build
 	@echo ""
-	@echo "Waiting for database to be ready..."
-	@timeout 5 >nul 2>&1 || sleep 5
+	@echo "Waiting for database to be ready (5s)..."
+	@sleep 5
 	@echo ""
 	@echo "Running migrations..."
 	@docker-compose exec web python manage.py migrate
