@@ -48,10 +48,11 @@ class FleetSerializer(serializers.ModelSerializer):
     
     The owner is automatically set to the authenticated user on creation.
     """
+    device_count = serializers.IntegerField(source='devices.count', read_only=True)
     
     class Meta:
         model = Fleet
-        fields = ['id', 'name', 'owner', 'created_at']
+        fields = ['id', 'name', 'owner', 'device_count', 'created_at']
         read_only_fields = ['id', 'owner', 'created_at']
     
     def validate_name(self, value):
