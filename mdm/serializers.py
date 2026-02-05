@@ -3,13 +3,16 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Fleet, Device
 
+# =============================================================================
+# USERS
+# =============================================================================
 
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for User model.
-    
-    On detail view (retrieve), includes the list of fleets owned by the user.
-    On list view, fleets are not included for performance.
+
+    Includes the list of fleets owned by the user.
+    Password is write-only and requires a minimum of 8 characters.
     """
     
     fleets = serializers.SerializerMethodField()
@@ -42,6 +45,10 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
+# =============================================================================
+# FLEETS
+# =============================================================================
+
 class FleetSerializer(serializers.ModelSerializer):
     """
     Serializer for Fleet model.
@@ -49,7 +56,7 @@ class FleetSerializer(serializers.ModelSerializer):
     The owner is automatically set to the authenticated user on creation.
     """
     device_count = serializers.IntegerField(source='devices.count', read_only=True)
-    
+
     class Meta:
         model = Fleet
         fields = ['id', 'name', 'owner', 'device_count', 'created_at']
@@ -78,6 +85,10 @@ class FleetSerializer(serializers.ModelSerializer):
         
         return value
 
+
+# =============================================================================
+# DEVICES
+# =============================================================================
 
 class DeviceSerializer(serializers.ModelSerializer):
     """
